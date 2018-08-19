@@ -20,9 +20,6 @@ $.ajax({
     });
     $('.gallery').html(personHTML);
     console.log(data);
-    // $(".gallery").on('click', (e) => {
-    //   console.log('hi');
-    // });
 }
 });
 
@@ -33,6 +30,15 @@ let searchHTML =
 </form>`
 
 $('.search-container').html(searchHTML);
+
+let personIndex = 0;
+
+const modalDiv = document.createElement('div');
+modalDiv.className = 'modal-container';
+modalDiv.innerHTML = createModalHTML();
+const bodyElement = document.querySelector('body');
+bodyElement.appendChild(modalDiv);
+modalDiv.style.display = 'none';
 
 $('.gallery').on('click', (e) => {
   let clickedClass = e.target.className;
@@ -45,41 +51,55 @@ $('.gallery').on('click', (e) => {
     card = e.target.parentNode.parentNode;
   }
   let person = people[card.id];
-  console.log(person);
-  const modalDiv = document.createElement('div');
-  modalDiv.className = 'modal-container';
-  modalDiv.innerHTML = addModalHTML(person);
-  const bodyElement = document.querySelector('body');
-  bodyElement.appendChild(modalDiv);
-  $('.modal-close-btn').on('click', () => {
-    bodyElement.removeChild(modalDiv);
-  })
-  $('.modal-next').on('click', () => {
-    index = card.id;
-    index = index + 1;
-    modalDiv.innerHTML = addModalHTML(people[index]);
-  })
+  changeModalHTML(person);
+  modalDiv.style.display = '';
+  personIndex = parseInt(card.id);
 })
 
-function addModalHTML(person) {
-  modalHTML =
-  `<div class="modal">
-      <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-      <div class="modal-info-container">
-          <img class="modal-img" src="${person.picture.large}" alt="profile picture">
-          <h3 id="name" class="modal-name cap">${person.name.first} ${person.name.last}</h3>
-          <p class="modal-text">${person.email}</p>
-          <p class="modal-text cap">${person.location.city}</p>
-          <hr>
-          <p class="modal-text">${person.phone}</p>
-          <p class="modal-text cap">${person.location.street}, ${person.location.city}, ${person.location.state} ${person.location.postcode}</p>
-          <p class="modal-text">Birthday: ${person.dob.date.slice(0,10)}</p>
-      </div>
-  </div>
+$('.modal-close-btn').on('click', () => {
+  modalDiv.style.display = 'none';
+})
 
-  <div class="modal-btn-container">
-      <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-      <button type="button" id="modal-next" class="modal-next btn">Next</button>
+document.querySelector('.modal-next').addEventListener('click', () => {
+  personIndex = personIndex < 11 ? personIndex + 1 : 0;
+  changeModalHTML(people[personIndex]);
+})
+
+document.querySelector('.modal-prev').addEventListener('click', () => {
+  personIndex = personIndex > 0 ? personIndex - 1 : 11;
+  changeModalHTML(people[personIndex]);
+})
+
+function createModalHTML() {
+  let modalHTML =
+  `<div class="modal-container">
+      <div class="modal">
+          <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+          <div class="modal-info-container">
+              <img class="modal-img" src="https://placehold.it/125x125" alt="profile picture">
+              <h3 id="modal-name" class="modal-name cap">name</h3>
+              <p id='modal-email' class="modal-text">email</p>
+              <p id='modal-city'class="modal-text cap">city</p>
+              <hr>
+              <p id='modal-phone' class="modal-text">(555) 555-5555</p>
+              <p id='modal-address' class="modal-text cap">123 Portland Ave., Portland, OR 97204</p>
+              <p id='modal-bday' class="modal-text">Birthday: 10/21/2015</p>
+          </div>
+      </div>
+      <div class="modal-btn-container">
+          <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+          <button type="button" id="modal-next" class="modal-next btn">Next</button>
+      </div>
   </div>`;
   return modalHTML;
+}
+
+function changeModalHTML(person) {
+  $('.modal-img').prop("src", person.picture.large);
+  $('#modal-name').text(`${person.name.first} ${person.name.last}`);
+  $('#modal-email').text(person.email);
+  $('#modal-city').text(person.location.city);
+  $('#modal-phone').text(person.phone);
+  $('#modal-address').text(`${person.location.street}, ${person.location.city}, ${person.location.state} ${person.location.postcode}`);
+  $('#modal-bday').text(`${person.dob.date.slice(0,10)}`);
 }
