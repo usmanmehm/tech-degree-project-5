@@ -4,7 +4,7 @@
 
 let people = []; // this empty array is set to store the people's data
 $.ajax({
-  url: 'https://randomuser.me/api/?gender=male&results=12&nat=us,au,nz,gb',
+  url: 'https://randomuser.me/api/?results=12&nat=us,au,nz,gb',
   dataType: 'json',
   success: function(data) {
     people = data.results;
